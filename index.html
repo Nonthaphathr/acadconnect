@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AcadConnect</title>
+<meta name="description" content="AcadConnect ศูนย์รวมระบบสารสนเทศวิชาการดิจิทัล โรงเรียนกระดุมทองวิทยา พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง">
+<meta name="theme-color" content="#b20a2c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: glass hero panel with stats on the left/right, a sticky glass toolbar, then a responsive grid of glass cards over the Relaxing-red gradient with soft glowing orbs. */
+:root{
+  --cream:#fffbd5;
+  --crimson:#b20a2c;
+  --crimson-deep:#7a0620;
+  --ink:#3a0812;
+  --ink-soft:#5a1424;
+  --glass:rgba(255,255,255,.56);
+  --glass-strong:rgba(255,255,255,.74);
+  --glass-line:rgba(255,255,255,.78);
+  --glow:0 10px 40px rgba(178,10,44,.22), 0 0 0 1px rgba(255,255,255,.35) inset;
+  --font-display:'Prompt','Sarabun','Noto Sans Thai',Tahoma,sans-serif;
+  --font-body:'Sarabun','Noto Sans Thai',Tahoma,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;font-family:var(--font-body);font-size:17px;line-height:1.55;color:var(--ink);
+  background:#e9a99a linear-gradient(120deg,#fffbd5 0%,#f3cdb7 28%,#d77f80 62%,#b20a2c 100%) fixed;
+  position:relative;overflow-x:hidden;
+}
+/* soft glow orbs */
+.orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75;animation:float 18s ease-in-out infinite}
+.orb.o1{width:420px;height:420px;left:-120px;top:-100px;background:radial-gradient(circle,#fff7b0,rgba(255,251,213,0) 70%)}
+.orb.o2{width:520px;height:520px;right:-160px;top:18%;background:radial-gradient(circle,#ff6b86,rgba(255,107,134,0) 70%);animation-delay:-6s}
+.orb.o3{width:460px;height:460px;left:22%;bottom:-180px;background:radial-gradient(circle,#ffd9c2,rgba(255,217,194,0) 70%);animation-delay:-11s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-26px) scale(1.07)}}
+
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:20px 16px 40px}
+.glass{
+  background:var(--glass);border:1px solid var(--glass-line);box-shadow:var(--glow);
+  -webkit-backdrop-filter:blur(20px) saturate(165%);backdrop-filter:blur(20px) saturate(165%);
+}
+
+/* top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;color:var(--crimson-deep)}
+.brand .mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#e0455f,#b20a2c);box-shadow:0 6px 18px rgba(178,10,44,.45)}
+.admin-zone{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 16px;font:600 15px var(--font-body);color:var(--crimson-deep);
+  background:var(--glass-strong);border:1px solid var(--glass-line);cursor:pointer;transition:transform .2s,box-shadow .2s;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pill:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(178,10,44,.25)}
+.pill.solid{background:linear-gradient(135deg,#d0233f,#b20a2c);color:#fff;border-color:rgba(255,255,255,.5)}
+.pill svg{width:18px;height:18px}
+.who{font-size:14px;color:var(--ink-soft)}
+
+/* hero */
+.hero{border-radius:28px;padding:34px clamp(20px,4vw,44px);display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:center}
+.eyebrow{display:inline-block;font:600 14px var(--font-body);letter-spacing:.04em;color:var(--crimson-deep);background:rgba(255,255,255,.7);border-radius:999px;padding:4px 14px;margin-bottom:12px}
+h1{margin:0;font-family:var(--font-display);font-weight:700;font-size:clamp(40px,7vw,68px);line-height:1.05;letter-spacing:-.01em;text-wrap:balance;
+  background:linear-gradient(100deg,#7a0620,#b20a2c 70%,#e0455f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:10px 0 0;font:600 clamp(18px,2.4vw,24px)/1.35 var(--font-display);color:var(--ink);text-wrap:balance}
+.sub-en{margin:6px 0 0;color:var(--ink-soft);font-size:16px}
+.credit{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--ink-soft);font-size:15.5px}
+.credit b{color:var(--crimson-deep);font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{border-radius:20px;padding:16px 10px;text-align:center;background:var(--glass-strong);border:1px solid var(--glass-line)}
+.stat .n{display:block;font:700 clamp(28px,4vw,38px)/1 var(--font-display);color:var(--crimson);font-variant-numeric:tabular-nums}
+.stat .l{display:block;margin-top:6px;font-size:14px;color:var(--ink-soft)}
+
+/* toolbar */
+.toolbar{position:sticky;top:10px;z-index:5;margin:20px 0 22px;border-radius:22px;padding:14px;display:grid;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search{flex:1 1 260px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.85);border:1px solid var(--glass-line);border-radius:14px;padding:0 14px}
+.search svg{width:20px;height:20px;color:var(--crimson);flex:none}
+.search input{flex:1;min-width:0;border:0;background:transparent;padding:12px 0;font:500 17px var(--font-body);color:var(--ink);outline:none}
+.search:focus-within{box-shadow:0 0 0 3px rgba(178,10,44,.35)}
+.search kbd{font:600 12px var(--font-body);color:var(--ink-soft);border:1px solid rgba(90,20,36,.25);border-radius:6px;padding:1px 7px}
+select{font:600 15.5px var(--font-body);color:var(--ink);background:rgba(255,255,255,.85);border:1px solid var(--glass-line);border-radius:14px;padding:11px 12px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.chip{flex:none;border:1px solid var(--glass-line);background:rgba(255,255,255,.55);color:var(--ink);font:600 15px var(--font-body);padding:8px 15px;border-radius:999px;cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s}
+.chip:hover{background:rgba(255,255,255,.9)}
+.chip[aria-pressed="true"]{background:linear-gradient(135deg,#d0233f,#b20a2c);color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(178,10,44,.4)}
+.chip .c{opacity:.75;font-weight:500;margin-left:4px;font-variant-numeric:tabular-nums}
+.adminbar{display:none;gap:8px;flex-wrap:wrap;padding-top:2px}
+.adminbar.on{display:flex}
+
+/* grid + cards */
+.result-note{margin:0 4px 12px;color:var(--ink);font-weight:600;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:18px}
+.card{position:relative;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:transform .25s,box-shadow .25s}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 50px rgba(178,10,44,.34),0 0 0 1px rgba(255,255,255,.5) inset}
+.card.hidden-sys{opacity:.7;border-style:dashed}
+.card-top{display:flex;align-items:center;gap:12px}
+.ico{width:48px;height:48px;border-radius:15px;flex:none;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#e0455f,#b20a2c);box-shadow:0 8px 22px rgba(178,10,44,.45),0 0 0 4px rgba(255,255,255,.45)}
+.ico svg{width:24px;height:24px}
+.tag{font:700 13px var(--font-body);color:var(--crimson-deep);background:rgba(255,255,255,.75);border-radius:999px;padding:3px 11px}
+.card h3{margin:0;font:600 19px/1.35 var(--font-display);color:var(--ink);text-wrap:balance}
+.card p{margin:0;color:var(--ink-soft);font-size:15.5px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.card-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px}
+.clicks{font-size:14px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.open{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font:700 15px var(--font-body);color:#fff;padding:9px 16px;border-radius:999px;
+  background:linear-gradient(135deg,#d0233f,#b20a2c);box-shadow:0 6px 18px rgba(178,10,44,.4);transition:transform .2s,box-shadow .2s}
+.open:hover{transform:translateX(2px);box-shadow:0 10px 26px rgba(178,10,44,.55)}
+.open svg{width:16px;height:16px}
+.card-admin{position:absolute;right:12px;top:12px;display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--glass-line);background:rgba(255,255,255,.85);color:var(--crimson-deep);display:grid;place-items:center;cursor:pointer}
+.icon-btn:hover{background:#fff}
+.icon-btn svg{width:17px;height:17px}
+.empty{grid-column:1/-1;text-align:center;border-radius:24px;padding:40px 20px;font-weight:600}
+
+/* footer */
+footer{margin-top:34px;display:flex;justify-content:center}
+.foot{border-radius:999px;padding:12px 22px;display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;align-items:center;font-size:14.5px;color:var(--ink);text-align:center}
+.dot{width:9px;height:9px;border-radius:50%;background:#c9a227;display:inline-block;margin-right:6px}
+.dot.live{background:#1e9e5a;box-shadow:0 0 0 4px rgba(30,158,90,.22)}
+
+/* dialog */
+dialog{border:1px solid var(--glass-line);border-radius:24px;padding:0;width:min(560px,calc(100vw - 32px));color:var(--ink);background:rgba(255,255,255,.88);
+  -webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);box-shadow:0 30px 80px rgba(58,8,18,.45)}
+dialog::backdrop{background:rgba(58,8,18,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.dlg{padding:24px;display:grid;gap:14px}
+.dlg h2{margin:0;font:700 22px var(--font-display);color:var(--crimson-deep)}
+.field{display:grid;gap:5px;font-weight:600;font-size:15px}
+.field input,.field textarea,.field select{font:500 16px var(--font-body);padding:10px 12px;border-radius:12px;border:1px solid rgba(90,20,36,.25);background:#fff;color:var(--ink)}
+.field textarea{min-height:92px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dlg-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.check{display:flex;gap:8px;align-items:center;font-weight:600}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:20;
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-weight:600;transition:.3s;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+:focus-visible{outline:3px solid #7a0620;outline-offset:2px;box-shadow:0 0 0 5px rgba(255,255,255,.9)}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}
+  .toolbar{top:6px}
+}
+@media (max-width:420px){
+  body{font-size:16px}
+  .stats{gap:8px}
+  .two{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="orbs" aria-hidden="true"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span></div>
+
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg></span>
+      <span>กลุ่มบริหารงานวิชาการ</span>
+    </div>
+    <div class="admin-zone">
+      <span class="who" id="who" hidden></span>
+      <button class="pill" id="btn-login" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span id="login-label">ผู้ดูแลระบบ</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero glass" aria-labelledby="t">
+    <div>
+      <span class="eyebrow">Digital Academic Information Center</span>
+      <h1 id="t">AcadConnect</h1>
+      <p class="sub">ศูนย์รวมระบบสารสนเทศวิชาการดิจิทัล</p>
+      <p class="sub-en">Digital Academic Information Center - AcadConnect</p>
+      <p class="credit"><span>โรงเรียนกระดุมทองวิทยา</span><span>พัฒนาโดย <b>ครูนนทพัทธ์ หิรัญเรือง</b></span></p>
+    </div>
+    <div class="stats" aria-label="สรุปภาพรวม">
+      <div class="stat"><span class="n" id="st-sys">0</span><span class="l">ระบบ</span></div>
+      <div class="stat"><span class="n" id="st-cat">0</span><span class="l">หมวดหมู่</span></div>
+      <div class="stat"><span class="n" id="st-clk">0</span><span class="l">ครั้งที่เปิดใช้</span></div>
+    </div>
+  </section>
+
+  <section class="toolbar glass" aria-label="ค้นหาและกรองระบบ">
+    <div class="row">
+      <label class="search" for="q">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="ค้นหาระบบ เช่น ผลการเรียน, สมัครเรียน, ข้อสอบ" autocomplete="off">
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <select id="sort" aria-label="เรียงลำดับ">
+        <option value="order">เรียงตามลำดับที่กำหนด</option>
+        <option value="popular">ใช้งานมากที่สุด</option>
+        <option value="name">เรียงตามชื่อ ก-ฮ</option>
+      </select>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="หมวดหมู่"></div>
+    <div class="adminbar" id="adminbar">
+      <button class="pill solid" id="btn-add" type="button">+ เพิ่มระบบ</button>
+      <button class="pill" id="btn-seed" type="button" hidden>นำเข้ารายการเริ่มต้นลง Firestore</button>
+    </div>
+  </section>
+
+  <p class="result-note" id="note" aria-live="polite"></p>
+  <main class="grid" id="grid"></main>
+
+  <footer>
+    <div class="foot glass">
+      <span>AcadConnect · โรงเรียนกระดุมทองวิทยา สังกัด อบจ.ศรีสะเกษ</span>
+      <span>พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง</span>
+      <span><span class="dot" id="dot"></span><span id="status">โหมดรายการเริ่มต้น</span></span>
+    </div>
+  </footer>
+</div>
+
+<dialog id="dlg-edit">
+  <form class="dlg" id="form" method="dialog">
+    <h2 id="dlg-title">เพิ่มระบบ</h2>
+    <label class="field">ชื่อระบบ<input id="f-title" required maxlength="120"></label>
+    <label class="field">คำอธิบายสั้น ๆ<textarea id="f-desc" maxlength="400"></textarea></label>
+    <label class="field">ลิงก์ (https://...)<input id="f-url" type="url" required placeholder="https://"></label>
+    <div class="two">
+      <label class="field">หมวดหมู่<select id="f-cat"></select></label>
+      <label class="field">ไอคอน<select id="f-icon"></select></label>
+    </div>
+    <div class="two">
+      <label class="field">ลำดับ<input id="f-order" type="number" min="1" step="1"></label>
+      <label class="check"><input id="f-active" type="checkbox" checked> แสดงบนหน้าเว็บ</label>
+    </div>
+    <div class="dlg-actions">
+      <button class="pill" type="button" id="f-cancel">ยกเลิก</button>
+      <button class="pill solid" type="submit" id="f-save">บันทึก</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-del">
+  <div class="dlg">
+    <h2>ลบระบบนี้หรือไม่</h2>
+    <p id="del-name" style="margin:0"></p>
+    <div class="dlg-actions">
+      <button class="pill" type="button" id="d-cancel">ยกเลิก</button>
+      <button class="pill solid" type="button" id="d-ok">ลบ</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ===== ตั้งค่า Firebase (ใส่ค่าจาก Project settings > Your apps) ===== */
+const FB_CONFIG = {
+  apiKey: "AIzaSyBqFxeRmyJikFSgaquJyLhkl6q6d3bVf8Q",
+  authDomain: "acadconnect-ktw.firebaseapp.com",
+  projectId: "acadconnect-ktw",
+  storageBucket: "acadconnect-ktw.firebasestorage.app",
+  messagingSenderId: "429230149796",
+  appId: "1:429230149796:web:01cbdbc097790b132ad631"
+};
+const ADMIN_EMAIL = "nonthaphathr@gmail.com";
+
+/* ===== หมวดหมู่ & ไอคอน ===== */
+const CATS = [
+  {k:"reg",   t:"ทะเบียนและวัดผล"},
+  {k:"adm",   t:"รับนักเรียน"},
+  {k:"teach", t:"การเรียนการสอน"},
+  {k:"plan",  t:"แผนงานและคุณภาพ"},
+  {k:"info",  t:"ข่าวสารและกิจกรรม"},
+  {k:"tool",  t:"เครื่องมือเอกสาร"}
+];
+const ICONS = {
+  file:{n:"เอกสาร",p:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'},
+  clipboard:{n:"แบบบันทึก",p:'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>'},
+  scan:{n:"สแกน",p:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M7 12h10"/>'},
+  book:{n:"หนังสือ",p:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6"/>'},
+  users:{n:"บุคคล",p:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.4c1.8.7 3 2.5 3 5.6"/>'},
+  swap:{n:"ย้าย/โอน",p:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>'},
+  cap:{n:"นักเรียน",p:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c2 2 10 2 12 0v-4.5"/>'},
+  target:{n:"เป้าหมาย",p:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>'},
+  pen:{n:"บันทึก",p:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>'},
+  clock:{n:"เวลา",p:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'},
+  badge:{n:"ประเมิน",p:'<circle cx="12" cy="9" r="5"/><path d="M9 13.5L8 21l4-2 4 2-1-7.5"/>'},
+  home:{n:"เว็บไซต์",p:'<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/>'},
+  chart:{n:"แอป/สถิติ",p:'<path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>'},
+  door:{n:"กิจกรรม",p:'<path d="M5 21V4h10v17M15 8h4v13M3 21h18"/><circle cx="12" cy="12" r=".8"/>'},
+  layers:{n:"เครื่องมือ",p:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>'}
+};
+const svg = (k) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[k] || ICONS.file).p + '</svg>';
+
+/* ===== รายการเริ่มต้น (จากไฟล์ผลงาน 11-11-2569) ===== */
+const SEED = [
+  {id:"s01",order:1, cat:"reg",  icon:"file",     title:"ระบบออกเอกสารผลการเรียน 0, ร, มส.", desc:"ออกเอกสารขออนุญาตให้ผลการเรียน “ร” (วก.กทว.106) บัญชีรายชื่อนักเรียนที่ติด 0 ร มส. และติดตามผลการแก้ไข (วก.กทว.107)", url:"https://nonthaphathr.github.io/report0rormorsor/"},
+  {id:"s02",order:2, cat:"reg",  icon:"clipboard",title:"ระบบจัดการข้อมูลแก้ไขผลการเรียน", desc:"บันทึกผลการแก้ไขผลการเรียนของนักเรียน แนบภาพหลักฐานได้ และแสดงผลแบบเรียลไทม์", url:"https://nonthaphathr.github.io/recordcorrectedacademicresults/"},
+  {id:"s03",order:3, cat:"reg",  icon:"scan",     title:"ScanDee (สแกนดี)", desc:"ตรวจกระดาษคำตอบปรนัยด้วยกล้องมือถือ ได้คะแนนทันที พร้อมสถิติ วิเคราะห์ความยากง่ายรายข้อ และส่งออก Excel", url:"https://nonthaphathr.github.io/ScanDee/#home"},
+  {id:"s04",order:4, cat:"reg",  icon:"book",     title:"ระบบคลังข้อสอบ", desc:"คลังข้อสอบสำหรับใช้สอบนักเรียน", url:"https://nonthaphathr.github.io/thaiexambank/"},
+  {id:"s05",order:5, cat:"reg",  icon:"users",    title:"ระบบสารสนเทศชั้นเรียน", desc:"ฐานข้อมูลกลางสำหรับครูที่ปรึกษา ม.1–ม.6 โรงเรียนกระดุมทองวิทยา", url:"https://nonthaphathr.github.io/studentdatasmanage1/"},
+  {id:"s06",order:6, cat:"reg",  icon:"swap",     title:"ระบบบันทึกข้อมูลนักเรียนย้ายเข้า ย้ายออก ลาออก", desc:"บันทึกข้อมูลนักเรียนย้ายเข้า ย้ายออก และลาออก เก็บบน Google Sheets", url:"https://krunononline.my.canva.site/canva-code-canva-sheet"},
+  {id:"s07",order:7, cat:"reg",  icon:"file",     title:"ระบบยื่นเอกสารคำร้องออนไลน์", desc:"ช่องทางยื่นคำร้องออนไลน์ สะดวก ง่าย ลดขั้นตอน", url:"https://nonthaphathr.github.io/academicform/"},
+  {id:"s08",order:8, cat:"adm",  icon:"cap",      title:"ระบบสมัครเรียน", desc:"บริหารจัดการการรับสมัครและมอบตัวนักเรียนออนไลน์ ประจำปีการศึกษา 2569", url:"https://nonthaphathr.github.io/recruit2026/"},
+  {id:"s09",order:9, cat:"adm",  icon:"target",   title:"ระบบบันทึกข้อมูลนักเรียนที่สนใจสมัครเรียน", desc:"สำรวจข้อมูลนักเรียนที่สนใจเรียนต่อ ระหว่างที่คณะครูออกแนะแนว", url:"https://nonthaphathr.github.io/naenaewktw/"},
+  {id:"s10",order:10,cat:"teach",icon:"pen",      title:"ระบบบันทึกการสอนครูนนท์", desc:"บันทึกและจัดการข้อมูลการสอน รายวิชาที่รับผิดชอบ ม.1–ม.6 ชั้นเรียน และจำนวนนักเรียน", url:"https://nonthaphathr.github.io/krunonteachinglog/"},
+  {id:"s11",order:11,cat:"teach",icon:"clock",    title:"ระบบช่วยจัดสอนแทน", desc:"จัดการตารางสอน คำนวณคาบว่างเพื่อจัดสอนแทน พร้อมสร้างเอกสารรายงาน", url:"https://nonthaphathr.github.io/substitute-teacher-system3/"},
+  {id:"s12",order:12,cat:"plan", icon:"target",   title:"ระบบจัดโครงการลงยุทธศาสตร์ กลยุทธ์ และเป้าประสงค์", desc:"เชื่อมโยงโครงการกับแผนยุทธศาสตร์และงานประกันคุณภาพ ส่งออก Excel และ Word สำหรับแผนปฏิบัติการประจำปี", url:"https://vichakarnkradoomthong-wq.github.io/project-ktw/"},
+  {id:"s13",order:13,cat:"plan", icon:"badge",    title:"ระบบประเมินเพื่อคงวิทยฐานะ", desc:"รวบรวมและนำเสนอหลักฐานผลการปฏิบัติงานตามข้อตกลงในการพัฒนางาน (PA) ให้คณะกรรมการตรวจประเมิน", url:"https://nonthaphathr.github.io/PA-website/"},
+  {id:"s14",order:14,cat:"info", icon:"home",     title:"เว็บไซต์กลุ่มบริหารงานวิชาการ", desc:"ศูนย์กลางข่าวสาร งานทะเบียน วัดผล เอกสารธุรการชั้นเรียน และคลังสื่อการเรียนรู้", url:"https://vichakarnkradoomthong-wq.github.io/website/"},
+  {id:"s15",order:15,cat:"info", icon:"chart",    title:"แอปพลิเคชัน VichakarnGO!", desc:"รวมฟังก์ชันงานบริหารงานวิชาการและข้อมูลสารสนเทศเพื่อการบริหารจัดการ", url:"https://vichakarngo-wozj.glide.page/"},
+  {id:"s16",order:16,cat:"info", icon:"book",     title:"ระบบจัดการวรรณธารกระดุมทอง 2569", desc:"บริหารโครงการพัฒนาทักษะการอ่านและการเขียน จัดฐานกิจกรรม วิทยากร สรุปผลประเมิน และพิมพ์ป้ายชื่อ", url:"https://nonthaphathr.github.io/wannatharn2569/"},
+  {id:"s17",order:17,cat:"info", icon:"door",     title:"แบบตอบรับกิจกรรมเปิดบ้านการเรียนรู้ ก.ท.ว.", desc:"ตอบรับเข้าร่วมกิจกรรม สรุปสถิติ สุ่มรายชื่อ และพิมพ์ใบลงทะเบียนอัตโนมัติ", url:"https://nonthaphathr.github.io/openhouse2026/"},
+  {id:"s18",order:18,cat:"tool", icon:"layers",   title:"ระบบใส่ลายน้ำสำเนาถูกต้องบน PDF", desc:"ใส่ลายน้ำ “สำเนาถูกต้อง” บนไฟล์ PDF ออนไลน์ ปรับตำแหน่ง สี และข้อความได้", url:"https://nonthaphathr.github.io/sumnaopdf/"},
+  {id:"s19",order:19,cat:"tool", icon:"file",     title:"ระบบจัดการ PDF Manager", desc:"แยกหน้า รวมไฟล์ และลดขนาด PDF บนเว็บฟรี", url:"https://nonthaphathr.github.io/pdfmanagement/"}
+];
+
+/* ===== สถานะ ===== */
+let systems = SEED.slice();
+let stats = {};
+let db = null, auth = null, isAdmin = false, remoteEmpty = false, live = false;
+let editingId = null, deletingId = null;
+const state = { q:"", cat:"all", sort:"order" };
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = (u) => /^https?:\/\//i.test(u || "") ? u : "#";
+const catName = (k) => (CATS.find(c => c.k === k) || {t:"อื่น ๆ"}).t;
+const nf = new Intl.NumberFormat("th-TH");
+
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+/* ===== แสดงผล ===== */
+function listVisible(){
+  let list = systems.filter(s => isAdmin || s.active !== false);
+  if (state.cat !== "all") list = list.filter(s => s.cat === state.cat);
+  const q = state.q.trim().toLowerCase();
+  if (q) list = list.filter(s => (s.title + " " + (s.desc || "") + " " + catName(s.cat)).toLowerCase().includes(q));
+  const by = {
+    order: (a,b) => (a.order||999) - (b.order||999),
+    popular: (a,b) => (stats[b.id]||0) - (stats[a.id]||0) || (a.order||999) - (b.order||999),
+    name: (a,b) => String(a.title).localeCompare(String(b.title), "th")
+  }[state.sort];
+  return list.sort(by);
+}
+
+function renderChips(){
+  const base = systems.filter(s => isAdmin || s.active !== false);
+  const make = (k, t, n) => '<button type="button" class="chip" data-cat="' + k + '" aria-pressed="' + (state.cat === k) + '">' + esc(t) + '<span class="c">' + n + '</span></button>';
+  let html = make("all", "ทั้งหมด", base.length);
+  CATS.forEach(c => { const n = base.filter(s => s.cat === c.k).length; if (n || isAdmin) html += make(c.k, c.t, n); });
+  $("chips").innerHTML = html;
+}
+
+function render(){
+  const list = listVisible();
+  const total = Object.values(stats).reduce((a,b) => a + (b||0), 0);
+  const shown = systems.filter(s => isAdmin || s.active !== false);
+  $("st-sys").textContent = nf.format(shown.length);
+  $("st-cat").textContent = nf.format(new Set(shown.map(s => s.cat)).size);
+  $("st-clk").textContent = nf.format(total);
+  renderChips();
+  $("note").textContent = "แสดง " + list.length + " จาก " + shown.length + " ระบบ";
+  if (!list.length){
+    $("grid").innerHTML = '<div class="empty glass">ไม่พบระบบที่ตรงกับคำค้น ลองเปลี่ยนคำค้นหรือเลือกหมวด “ทั้งหมด”</div>';
+    return;
+  }
+  $("grid").innerHTML = list.map(s => {
+    const n = stats[s.id] || 0;
+    const admin = isAdmin
+      ? '<div class="card-admin"><button class="icon-btn" type="button" data-act="edit" data-id="' + esc(s.id) + '" aria-label="แก้ไข ' + esc(s.title) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button><button class="icon-btn" type="button" data-act="del" data-id="' + esc(s.id) + '" aria-label="ลบ ' + esc(s.title) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></button></div>'
+      : "";
+    return '<article class="card glass' + (s.active === false ? " hidden-sys" : "") + '">' + admin +
+      '<div class="card-top"><span class="ico">' + svg(s.icon) + '</span><span class="tag">' + esc(catName(s.cat)) + (s.active === false ? " · ซ่อนอยู่" : "") + '</span></div>' +
+      '<h3>' + esc(s.title) + '</h3>' +
+      '<p>' + esc(s.desc) + '</p>' +
+      '<div class="card-foot"><span class="clicks">เปิดใช้ ' + nf.format(n) + ' ครั้ง</span>' +
+      '<a class="open" href="' + esc(safeUrl(s.url)) + '" target="_blank" rel="noopener noreferrer" data-id="' + esc(s.id) + '">เปิดระบบ' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div></article>';
+  }).join("");
+}
+
+function setStatus(){
+  $("dot").className = "dot" + (live ? " live" : "");
+  $("status").textContent = live ? "เชื่อมต่อ Firestore แบบเรียลไทม์" : "โหมดรายการเริ่มต้น (ยังไม่เชื่อมต่อ Firestore)";
+  $("btn-seed").hidden = !(isAdmin && live && remoteEmpty);
+}
+
+/* ===== Firebase ===== */
+function track(id){
+  if (!db || !id) return;
+  const ref = db.collection("stats").doc(id);
+  ref.get().then(s => s.exists
+    ? ref.update({clicks: firebase.firestore.FieldValue.increment(1)})
+    : ref.set({clicks: 1})
+  ).catch(() => {});
+}
+
+function initFirebase(){
+  try{
+    if (!window.firebase || !FB_CONFIG.apiKey || !FB_CONFIG.projectId) return;
+    firebase.initializeApp(FB_CONFIG);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    db.collection("systems").onSnapshot(snap => {
+      live = true;
+      remoteEmpty = snap.empty;
+      systems = snap.empty ? SEED.slice() : snap.docs.map(d => Object.assign({id:d.id}, d.data()));
+      setStatus(); render();
+    }, err => { console.warn(err); live = false; setStatus(); });
+    db.collection("stats").onSnapshot(snap => {
+      stats = {}; snap.forEach(d => { stats[d.id] = d.data().clicks || 0; }); render();
+    }, err => console.warn(err));
+    auth.onAuthStateChanged(u => {
+      const ok = !!u && u.email === ADMIN_EMAIL && u.emailVerified;
+      if (u && !ok){ toast("บัญชีนี้ไม่มีสิทธิ์ผู้ดูแลระบบ"); auth.signOut(); return; }
+      isAdmin = ok; applyAdminUi(u); render(); setStatus();
+    });
+  }catch(e){ console.warn(e); }
+}
+
+function applyAdminUi(u){
+  $("adminbar").classList.toggle("on", isAdmin);
+  $("who").hidden = !isAdmin; $("who").textContent = isAdmin ? u.email : "";
+  $("login-label").textContent = isAdmin ? "ออกจากระบบ" : "ผู้ดูแลระบบ";
+}
+
+/* ===== ผู้ดูแล: เพิ่ม/แก้/ลบ ===== */
+function fillSelects(){
+  $("f-cat").innerHTML = CATS.map(c => '<option value="' + c.k + '">' + esc(c.t) + '</option>').join("");
+  $("f-icon").innerHTML = Object.keys(ICONS).map(k => '<option value="' + k + '">' + esc(ICONS[k].n) + '</option>').join("");
+}
+function openEdit(id){
+  editingId = id;
+  const s = id ? systems.find(x => x.id === id) : null;
+  $("dlg-title").textContent = s ? "แก้ไขระบบ" : "เพิ่มระบบ";
+  $("f-title").value = s ? s.title : "";
+  $("f-desc").value = s ? (s.desc || "") : "";
+  $("f-url").value = s ? s.url : "";
+  $("f-cat").value = s ? s.cat : "reg";
+  $("f-icon").value = s && ICONS[s.icon] ? s.icon : "file";
+  $("f-order").value = s ? (s.order || "") : (Math.max(0, ...systems.map(x => x.order || 0)) + 1);
+  $("f-active").checked = s ? s.active !== false : true;
+  $("dlg-edit").showModal();
+}
+async function saveEdit(ev){
+  ev.preventDefault();
+  if (!db || !isAdmin) return;
+  const url = $("f-url").value.trim();
+  if (!/^https?:\/\//i.test(url)){ toast("ลิงก์ต้องขึ้นต้นด้วย https://"); return; }
+  const data = {
+    title: $("f-title").value.trim(), desc: $("f-desc").value.trim(), url,
+    cat: $("f-cat").value, icon: $("f-icon").value,
+    order: parseInt($("f-order").value, 10) || 999, active: $("f-active").checked
+  };
+  try{
+    const col = db.collection("systems");
+    if (editingId) await col.doc(editingId).set(data); else await col.add(data);
+    $("dlg-edit").close(); toast("บันทึกแล้ว");
+  }catch(e){ toast("บันทึกไม่สำเร็จ: " + (e.code || e.message)); }
+}
+async function confirmDelete(){
+  if (!db || !isAdmin || !deletingId) return;
+  try{
+    await db.collection("systems").doc(deletingId).delete();
+    $("dlg-del").close(); toast("ลบแล้ว");
+  }catch(e){ toast("ลบไม่สำเร็จ: " + (e.code || e.message)); }
+}
+async function seedAll(){
+  if (!db || !isAdmin) return;
+  try{
+    const batch = db.batch();
+    SEED.forEach(s => { const d = Object.assign({}, s, {active:true}); delete d.id; batch.set(db.collection("systems").doc(s.id), d); });
+    await batch.commit(); toast("นำเข้ารายการเริ่มต้นแล้ว " + SEED.length + " ระบบ");
+  }catch(e){ toast("นำเข้าไม่สำเร็จ: " + (e.code || e.message)); }
+}
+
+/* ===== เหตุการณ์ ===== */
+$("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+$("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
+$("chips").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  state.cat = b.dataset.cat; render();
+});
+$("grid").addEventListener("click", e => {
+  const open = e.target.closest("a.open");
+  if (open){ track(open.dataset.id); return; }
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  if (b.dataset.act === "edit") openEdit(b.dataset.id);
+  if (b.dataset.act === "del"){
+    deletingId = b.dataset.id;
+    const s = systems.find(x => x.id === deletingId);
+    $("del-name").textContent = s ? s.title : "";
+    $("dlg-del").showModal();
+  }
+});
+$("btn-login").addEventListener("click", () => {
+  if (!auth){ toast("ยังไม่ได้ตั้งค่าการเชื่อมต่อ Firebase"); return; }
+  if (isAdmin){ auth.signOut(); return; }
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => toast("เข้าสู่ระบบไม่สำเร็จ: " + (e.code || e.message)));
+});
+$("btn-add").addEventListener("click", () => openEdit(null));
+$("btn-seed").addEventListener("click", seedAll);
+$("form").addEventListener("submit", saveEdit);
+$("f-cancel").addEventListener("click", () => $("dlg-edit").close());
+$("d-cancel").addEventListener("click", () => $("dlg-del").close());
+$("d-ok").addEventListener("click", confirmDelete);
+document.addEventListener("keydown", e => {
+  if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){ e.preventDefault(); $("q").focus(); }
+});
+
+fillSelects();
+render();
+setStatus();
+initFirebase();
+</script>
+</body>
+</html>
