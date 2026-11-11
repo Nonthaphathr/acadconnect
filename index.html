@@ -6,6 +6,15 @@
 <title>AcadConnect</title>
 <meta name="description" content="AcadConnect ศูนย์รวมระบบสารสนเทศวิชาการดิจิทัล โรงเรียนกระดุมทองวิทยา พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง">
 <meta name="theme-color" content="#b20a2c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AcadConnect">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>
+window.__bip=null;
+window.addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); window.__bip=e; window.dispatchEvent(new Event("bip-ready")); });
+if("serviceWorker" in navigator && location.protocol==="https:"){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+</script>
 <link rel="icon" type="image/png" sizes="64x64" href="https://nonthaphathr.github.io/uploadimg/acadconnect-favicon.png">
 <link rel="apple-touch-icon" href="https://nonthaphathr.github.io/uploadimg/acadconnect-icon-192.png">
 <meta property="og:image" content="https://nonthaphathr.github.io/uploadimg/acadconnect-logo.png">
@@ -62,6 +71,14 @@ body{
 .pill svg{width:18px;height:18px}
 .who{font-size:14px;color:var(--ink-soft)}
 
+.install-btn[hidden]{display:none}
+.pwa-steps{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.pwa-steps li{border:1px solid rgba(90,20,36,.2);border-radius:14px;padding:10px 14px;background:#fff}
+.pwa-steps li.me{border-color:var(--crimson);box-shadow:0 0 0 3px rgba(178,10,44,.18)}
+.pwa-steps b{display:block;color:var(--crimson-deep)}
+.pwa-logo{display:flex;align-items:center;gap:12px}
+.pwa-logo img{width:56px;height:56px;border-radius:14px}
+@media (max-width:420px){.install-btn .txt{display:none}}
 /* hero */
 .hero{border-radius:28px;padding:34px clamp(20px,4vw,44px);display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:center}
 .eyebrow{display:inline-block;font:600 14px var(--font-body);letter-spacing:.04em;color:var(--crimson-deep);background:rgba(255,255,255,.7);border-radius:999px;padding:4px 14px;margin-bottom:12px}
@@ -168,6 +185,10 @@ dialog::backdrop{background:rgba(58,8,18,.45);-webkit-backdrop-filter:blur(4px);
     </div>
     <div class="admin-zone">
       <span class="who" id="who" hidden></span>
+      <button class="pill install-btn" id="btn-install" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 20h14"/></svg>
+        <span class="txt">ติดตั้งแอป</span>
+      </button>
       <button class="pill" id="btn-login" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
         <span id="login-label">ผู้ดูแลระบบ</span>
@@ -251,6 +272,19 @@ dialog::backdrop{background:rgba(58,8,18,.45);-webkit-backdrop-filter:blur(4px);
       <button class="pill" type="button" id="d-cancel">ยกเลิก</button>
       <button class="pill solid" type="button" id="d-ok">ลบ</button>
     </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-pwa">
+  <div class="dlg">
+    <h2>ติดตั้ง AcadConnect เป็นแอป</h2>
+    <div class="pwa-logo"><img src="https://nonthaphathr.github.io/uploadimg/acadconnect-icon-192.png" alt="ไอคอน AcadConnect" width="56" height="56"><span>เปิดจากหน้าจอโฮมได้เหมือนแอปทั่วไป</span></div>
+    <ul class="pwa-steps">
+      <li id="st-ios"><b>iPhone / iPad (Safari)</b>แตะปุ่มแชร์ เลื่อนลงเลือก “เพิ่มไปยังหน้าจอโฮม” แล้วแตะ “เพิ่ม”</li>
+      <li id="st-and"><b>Android (Chrome)</b>แตะเมนู ⋮ เลือก “ติดตั้งแอป” หรือ “เพิ่มลงในหน้าจอหลัก”</li>
+      <li id="st-pc"><b>คอมพิวเตอร์ (Chrome / Edge)</b>กดไอคอนติดตั้งท้ายช่องที่อยู่เว็บ</li>
+    </ul>
+    <div class="dlg-actions"><button class="pill solid" type="button" id="pwa-close">ปิด</button></div>
   </div>
 </dialog>
 
@@ -519,6 +553,58 @@ $("d-ok").addEventListener("click", confirmDelete);
 document.addEventListener("keydown", e => {
   if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){ e.preventDefault(); $("q").focus(); }
 });
+
+/* ===== PWA ===== */
+const APP={name:"AcadConnect ศูนย์รวมระบบสารสนเทศวิชาการดิจิทัล",short:"AcadConnect",desc:"ศูนย์รวมระบบสารสนเทศวิชาการดิจิทัล โรงเรียนกระดุมทองวิทยา",theme:"#b20a2c",bg:"#fffbd5",fallbackText:"AC"};
+const LOGO_URL="https://nonthaphathr.github.io/uploadimg/acadconnect-logo.png";
+function loadImgCors(src){return new Promise((res,rej)=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>res(im);im.onerror=()=>rej(new Error("logo"));im.src=src;});}
+function drawAppIcon(img,size,pad){
+  const c=document.createElement("canvas");c.width=c.height=size;const x=c.getContext("2d");
+  x.fillStyle=img?"#ffffff":APP.theme;x.fillRect(0,0,size,size);
+  if(img){const box=size*(1-2*pad),r=Math.min(box/img.width,box/img.height),w=img.width*r,h=img.height*r;x.drawImage(img,(size-w)/2,(size-h)/2,w,h);}
+  else{x.fillStyle="#ffffff";x.font="700 "+Math.round(size*.4)+"px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(APP.fallbackText,size/2,size/2+size*.02);}
+  return c.toDataURL("image/png");
+}
+function setHeadLink(rel,href,attrs){
+  let l=document.querySelector('link[rel="'+rel+'"]');if(!l){l=document.createElement("link");l.rel=rel;document.head.appendChild(l);}
+  l.href=href;Object.keys(attrs||{}).forEach(k=>l.setAttribute(k,attrs[k]));return l;
+}
+function setupPwaIcons(logoUrl,app){
+  let dead=false,blobUrl=null;
+  (async()=>{
+    let icons,apple,img=null;
+    if(logoUrl){try{img=await loadImgCors(logoUrl);}catch(e){img=null;}}
+    try{
+      if(logoUrl&&!img)throw new Error("cors");
+      const a=drawAppIcon(img,192,.1),b=drawAppIcon(img,512,.1),m=drawAppIcon(img,512,.22);
+      icons=[{src:a,sizes:"192x192",type:"image/png",purpose:"any"},{src:b,sizes:"512x512",type:"image/png",purpose:"any"},{src:m,sizes:"512x512",type:"image/png",purpose:"maskable"}];
+      apple=drawAppIcon(img,180,.1);
+    }catch(e){if(!logoUrl)return;icons=[{src:logoUrl,sizes:"192x192 512x512",purpose:"any"}];apple=logoUrl;}
+    if(dead)return;
+    const base=location.origin+location.pathname;
+    const manifest={id:base,name:app.name,short_name:app.short,description:app.desc,start_url:base,scope:base,display:"standalone",orientation:"portrait",background_color:app.bg,theme_color:app.theme,lang:"th",icons};
+    blobUrl=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"}));
+    setHeadLink("manifest",blobUrl);
+    setHeadLink("apple-touch-icon",apple,{sizes:"180x180"});
+  })();
+  return()=>{dead=true;if(blobUrl)setTimeout(()=>URL.revokeObjectURL(blobUrl),1000);};
+}
+function isStandalone(){try{return (matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;}catch(e){return false;}}
+function updateInstallBtn(){$("btn-install").hidden=isStandalone();}
+function showPwaHelp(){
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const and=/android/i.test(navigator.userAgent);
+  $("st-ios").classList.toggle("me",ios);$("st-and").classList.toggle("me",and);$("st-pc").classList.toggle("me",!ios&&!and);
+  $("dlg-pwa").showModal();
+}
+$("btn-install").addEventListener("click",async()=>{
+  if(window.__bip){try{window.__bip.prompt();await window.__bip.userChoice;}catch(e){}window.__bip=null;}
+  else showPwaHelp();
+});
+$("pwa-close").addEventListener("click",()=>$("dlg-pwa").close());
+window.addEventListener("appinstalled",()=>{$("btn-install").hidden=true;});
+updateInstallBtn();
+setupPwaIcons(LOGO_URL,APP);
 
 fillSelects();
 render();
